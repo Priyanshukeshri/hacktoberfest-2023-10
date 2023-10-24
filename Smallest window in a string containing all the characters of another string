@@ -1,0 +1,67 @@
+Given two strings S and P. Find the smallest window in the string S consisting of all the characters(including duplicates) of the string P.  Return "-1" in case there is no such window present. In case there are multiple such windows of same length, return the one with the least starting index.
+Note : All characters are in Lowercase alphabets. 
+
+Example 1:
+
+Input:
+S = "timetopractice"
+P = "toc"
+Output: 
+toprac
+Explanation: "toprac" is the smallest
+substring in which "toc" can be found
+
+
+def minWindow(S, P):
+    if not S or not P:
+        return "-1"
+    
+    # Create dictionaries to store the frequency of characters in P and the current window.
+    p_freq = {}
+    window_freq = {}
+    
+    # Populate the p_freq dictionary with character frequencies from P.
+    for char in P:
+        p_freq[char] = p_freq.get(char, 0) + 1
+    
+    # Initialize pointers and variables.
+    left, right = 0, 0
+    min_len = float('inf')
+    min_window = ""
+    required_chars = len(p_freq)
+    formed_chars = 0
+    
+    while right < len(S):
+        char = S[right]
+        window_freq[char] = window_freq.get(char, 0) + 1
+        
+        # Check if the current character is part of P and if its frequency matches.
+        if char in p_freq and window_freq[char] == p_freq[char]:
+            formed_chars += 1
+        
+        # Try to minimize the window by moving the left pointer.
+        while left <= right and formed_chars == required_chars:
+            char = S[left]
+            if right - left + 1 < min_len:
+                min_len = right - left + 1
+                min_window = S[left:right+1]
+            
+            # Reduce the size of the window by moving the left pointer.
+            window_freq[char] -= 1
+            if char in p_freq and window_freq[char] < p_freq[char]:
+                formed_chars -= 1
+            
+            left += 1
+        
+        right += 1
+    
+    if min_len == float('inf'):
+        return "-1"
+    
+    return min_window
+
+# Example usage:
+S = "timetopractice"
+P = "toc"
+result = minWindow(S, P)
+print(result)  # Output: "toprac"
